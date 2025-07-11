@@ -70,6 +70,7 @@ struct ChatState {
     input: String,
     users: HashMap<NodeId, String>,
 }
+use tokio::time::interval;
 
 async fn chat_ui(
     mut receiver: GossipReceiver,
@@ -81,15 +82,20 @@ async fn chat_ui(
     let mut terminal = Terminal::new(CrosstermBackend::new(io::stdout()))?;
     terminal.clear()?;
     let mut state = ChatState::default();
-
+    let mut rebroadcast = interval(Duration::from_secs(5));
     // Announce your presence if you have a name
+    // Send a "WhoIsThere" message so others reply with their AboutMe
+    sender
+        .broadcast(
+            Message::new(MessageBody::WhoIsThere { from: node_id })
+                .to_vec()
+                .into(),
+        )
+        .await?;
+
+    // Insert our own name into state immediately
     if let Some(name) = &display_name {
         state.users.insert(node_id, name.clone());
-        let message = Message::new(MessageBody::AboutMe {
-            from: node_id,
-            name: name.clone(),
-        });
-        sender.broadcast(message.to_vec().into()).await?;
     }
 
     // Spawn a thread to read terminal input and send it through channel
@@ -106,49 +112,76 @@ async fn chat_ui(
         terminal.draw(|f| render_ui(f, &state))?;
 
         tokio::select! {
-            Some(key) = input_rx.recv() => {
-                match key.code {
-                    KeyCode::Char('q') | KeyCode::Esc => break,
-                    KeyCode::Enter => {
-                        let msg = state.input.trim().to_string();
-                        if !msg.is_empty() {
-                            let outgoing = Message::new(MessageBody::Message {
-                                from: node_id,
-                                text: msg.clone(),
-                            });
-                            sender.broadcast(outgoing.to_vec().into()).await?;
-                            let label = display_name.clone().unwrap_or_else(|| "You".into());
-                            state.messages.push((label, msg));
-                            state.input.clear();
+                    Some(key) = input_rx.recv() => {
+                        match key.code {
+                            KeyCode::Char('q') | KeyCode::Esc => break,
+                            KeyCode::Enter => {
+                                let msg = state.input.trim().to_string();
+                                if !msg.is_empty() {
+                                    let outgoing = Message::new(MessageBody::Message {
+                                        from: node_id,
+                                        text: msg.clone(),
+                                    });
+                                    sender.broadcast(outgoing.to_vec().into()).await?;
+                                    let label = display_name.clone().unwrap_or_else(|| "You".into());
+                                    state.messages.push((label, msg));
+                                    state.input.clear();
+                                }
+                            }
+                            KeyCode::Backspace => {
+                                state.input.pop();
+                            }
+                            KeyCode::Char(c) => {
+                                state.input.push(c);
+                            }
+                            _ => {}
                         }
                     }
-                    KeyCode::Backspace => {
-                        state.input.pop();
-                    }
-                    KeyCode::Char(c) => {
-                        state.input.push(c);
-                    }
-                    _ => {}
-                }
-            }
 
-            Ok(Some(Event::Gossip(GossipEvent::Received(msg)))) = receiver.try_next() => {
-                if let Ok(msg) = Message::from_bytes(&msg.content) {
-                    match msg.body {
-                        MessageBody::AboutMe { from, name } => {
-                            state.users.insert(from, name.clone());
+                  Ok(Some(Event::Gossip(GossipEvent::Received(msg)))) = receiver.try_next() => {
+            if let Ok(msg) = Message::from_bytes(&msg.content) {
+                match msg.body {
+                    MessageBody::WhoIsThere { from } => {
+                        // Ignore our own WhoIsThere
+                        if from != node_id {
+                            if let Some(name) = &display_name {
+                                let response = Message::new(MessageBody::AboutMe {
+                                    from: node_id,
+                                    name: name.clone(),
+                                });
+                                sender.broadcast(response.to_vec().into()).await?;
+                            }
+                        }
+                    }
+                    MessageBody::AboutMe { from, name } => {
+                        if !state.users.contains_key(&from) {
                             state.messages.push(("System".into(), format!("{name} joined")));
                         }
-                        MessageBody::Message { from, text } => {
-                            let name = state.users.get(&from).cloned().unwrap_or_else(|| from.fmt_short());
-                            state.messages.push((name, text));
-                        }
+                        state.users.insert(from, name.clone());
+                    }
+                    MessageBody::Message { from, text } => {
+                        let name = state
+                            .users
+                            .get(&from)
+                            .cloned()
+                            .unwrap_or_else(|| from.fmt_short());
+                        state.messages.push((name, text));
                     }
                 }
             }
-
-            _ = sleep(Duration::from_millis(100)) => {}
         }
+                    _ = rebroadcast.tick() => {
+                        if let Some(name) = &display_name {
+                            let about = Message::new(MessageBody::AboutMe {
+                                from: node_id,
+                                name: name.clone(),
+                            });
+                            sender.broadcast(about.to_vec().into()).await?;
+                        }
+                    }
+
+                    _ = sleep(Duration::from_millis(100)) => {}
+                }
     }
 
     disable_raw_mode()?;
@@ -254,6 +287,7 @@ struct Message {
 
 #[derive(Debug, Serialize, Deserialize)]
 enum MessageBody {
+    WhoIsThere { from: NodeId },
     AboutMe { from: NodeId, name: String },
     Message { from: NodeId, text: String },
 }
