@@ -195,10 +195,30 @@ enum Command {
     Join { ticket: String },
 }
 
+fn cli_header() {
+    print!("\x1B[2J\x1B[1;1H");
+    println!(
+        r"
+ __  __           _     ____                       
+|  \/  | ___  ___| |__ / ___| _ __   __ _  ___ ___ 
+| |\/| |/ _ \/ __| '_ \\___ \| '_ \ / _` |/ __/ _ \
+| |  | |  __/\__ \ | | |___) | |_) | (_| | (_|  __/
+|_|  |_|\___||___/_| |_|____/| .__/ \__,_|\___\___|
+                             |_|                   
+    "
+    );
+    // Updated welcome and credit messages with colors
+    println!("\nWelcome to \x1B[33mMeshSpace\x1B[0m, your P2P Chat App!\n");
+    println!("\x1B[34mBinding Nodes, Broadcasting Connections\x1B[0m\n");
+    println!("Made by \x1B[32m@Pujan-DEV\x1B[0m && \x1B[32m@jigyasha-rjb\x1B[0m\n");
+    println!("----------------------------------------------------\n");
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut input = String::new();
-
+    cli_header();
+    io::stdout().flush()?;
     print!("Enter your name (optional): ");
     io::stdout().flush()?;
     io::stdin().read_line(&mut input)?;
@@ -226,6 +246,8 @@ async fn main() -> Result<()> {
     io::stdin().read_line(&mut input)?;
     let choice = input.trim().to_string();
     input.clear();
+    cli_header();
+
     let (topic, nodes) = if choice == "1" {
         let topic = TopicId::from_bytes(rand::random());
         println!("> opening chat room for topic {topic}");
