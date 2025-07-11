@@ -6,7 +6,7 @@ This document outlines the networking logic that powers the peer-to-peer chat ap
 
   
 
-📌 _This file focuses **only** on the networking layer. A separate `tui.md` describes the terminal user interface (TUI) layer and Peer Discovery `peer_discovery.md` the explains the nodes discovery process.
+📌 _This file focuses **only** on the networking layer. A separate `tui.md` describes the terminal user interface (TUI) layer and `peer_discovery.md` the explains the nodes discovery process.
 
   
 
@@ -136,15 +136,13 @@ let (sender, receiver) = gossip.subscribe_and_join(topic, node_ids).await?.split
 
   
 <p align="center">
-  <img src="assets/sender-receiver-flow.png" alt="Broadcast Flow" width="400">
+  <img src="../assets/sender-receiver-flow.png" alt="Broadcast Flow" width="400">
   <br/>
-
-> Figure: Broadcast message flow across peers using gossip
 </p>
 
+> Figure: Broadcast message flow across peers using gossip
 
-
-  
+ 
 
 ---
 
@@ -182,9 +180,9 @@ This string acts as a portable invitation for session joining.
 ```txt
 pmwhi33qnfvqsow3gibt...<snipped>...tois2pvmx2
 ```
-<p align="center">
- <i>Example of base32-encoded ticket string in terminal output.</i>
-</p>
+
+> Example of base32-encoded ticket string in terminal output
+
 
 ---
 
@@ -227,13 +225,11 @@ sender.broadcast(message.to_vec().into()).await?;
   
 
 <p align="center">
-  <img src="assets/serialization-to-reception-flow.png" alt="Serialization to Reception Flow" width="300">
+  <img src="../assets/serialization-to-reception-flow.png" alt="Serialization to Reception Flow" width="300">
   <br/>
-
+</p>
 > Figure: End-to-End Message Path in iroh-gossip: Serialize → Gossip → Receive → Handle
 
-</p>
-  
 
 ---
 
@@ -275,15 +271,15 @@ The system implements a **full-mesh** gossip network. Each peer communicates wit
 
   
 <p align="center">
-  <img src="assets/full-mesh-flow.png" alt="Full Mesh Flow" width="1200">
+  <img src="../assets/full-mesh-flow.png" alt="Full Mesh Flow" width="1200">
   <br/>
+</p>
 
 > Figure: Enhanced flowchart showing full-mesh connectivity
 
-</p>
+
 
   
-
 No central node exists. All participants are equal in authority and visibility.
 
 
