@@ -228,6 +228,7 @@ sender.broadcast(message.to_vec().into()).await?;
   <img src="../assets/serialization-to-reception-flow.png" alt="Serialization to Reception Flow" width="300">
   <br/>
 </p>
+
 > Figure: End-to-End Message Path in iroh-gossip: Serialize → Gossip → Receive → Handle
 
 
