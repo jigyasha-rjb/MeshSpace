@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt, str::FromStr};
 use anyhow::Result;
 use clap::Parser;
 use futures_lite::StreamExt;
-use iroh::{Endpoint, NodeAddr, NodeId, protocol::Router};
+use iroh::{protocol::Router, Endpoint, NodeAddr, NodeId};
 use iroh_gossip::net::GossipSender;
 use iroh_gossip::{
     net::{Event, Gossip, GossipEvent, GossipReceiver},
@@ -30,11 +30,11 @@ use crossterm::{
 };
 
 use ratatui::{
-    Frame, Terminal,
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     text::Text,
     widgets::{Block, Borders, Paragraph, Wrap},
+    Frame, Terminal,
 };
 fn render_ui(f: &mut Frame, state: &ChatState) {
     let chunks = Layout::default()
@@ -59,7 +59,9 @@ fn render_ui(f: &mut Frame, state: &ChatState) {
 
     f.render_widget(chat_widget, chunks[0]);
     f.render_widget(input_widget, chunks[1]);
-    f.set_cursor(chunks[1].x + state.input.len() as u16 + 1, chunks[1].y + 1);
+    if let Ok(cursor_x) = (chunks[1].x as usize + state.input.len() + 1).try_into() {
+        f.set_cursor_position((cursor_x, chunks[1].y + 1));
+    }
 }
 
 #[derive(Default)]
@@ -92,12 +94,10 @@ async fn chat_ui(
 
     // Spawn a thread to read terminal input and send it through channel
     let (input_tx, mut input_rx) = tokio::sync::mpsc::channel(1);
-    std::thread::spawn(move || {
-        loop {
-            if event::poll(Duration::from_millis(50)).unwrap() {
-                if let Ok(CEvent::Key(key)) = event::read() {
-                    let _ = input_tx.blocking_send(key);
-                }
+    std::thread::spawn(move || loop {
+        if event::poll(Duration::from_millis(50)).unwrap() {
+            if let Ok(CEvent::Key(key)) = event::read() {
+                let _ = input_tx.blocking_send(key);
             }
         }
     });
@@ -275,38 +275,6 @@ impl Message {
     }
 }
 
-// Handle incoming events
-async fn subscribe_loop(mut receiver: GossipReceiver) -> Result<()> {
-    let mut names = HashMap::new();
-    while let Some(event) = receiver.try_next().await? {
-        if let Event::Gossip(GossipEvent::Received(msg)) = event {
-            match Message::from_bytes(&msg.content)?.body {
-                MessageBody::AboutMe { from, name } => {
-                    names.insert(from, name.clone());
-                    println!("> {} is now known as {}", from.fmt_short(), name);
-                }
-                MessageBody::Message { from, text } => {
-                    let name = names
-                        .get(&from)
-                        .map_or_else(|| from.fmt_short(), String::to_string);
-                    println!("{}: {}", name, text);
-                }
-            }
-        }
-    }
-    Ok(())
-}
-
-fn input_loop(line_tx: tokio::sync::mpsc::Sender<String>) -> Result<()> {
-    let mut buffer = String::new();
-    let stdin = std::io::stdin(); // We get `Stdin` here.
-    loop {
-        stdin.read_line(&mut buffer)?;
-        line_tx.blocking_send(buffer.clone())?;
-        buffer.clear();
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 struct Ticket {
     topic: TopicId,
@@ -338,4 +306,3 @@ impl FromStr for Ticket {
         Self::from_bytes(&bytes)
     }
 }
-
