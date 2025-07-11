@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt, str::FromStr};
 use anyhow::Result;
 use clap::Parser;
 use futures_lite::StreamExt;
-use iroh::{protocol::Router, Endpoint, NodeAddr, NodeId};
+use iroh::{Endpoint, NodeAddr, NodeId, protocol::Router};
 use iroh_gossip::net::GossipSender;
 use iroh_gossip::{
     net::{Event, Gossip, GossipEvent, GossipReceiver},
@@ -30,11 +30,11 @@ use crossterm::{
 };
 
 use ratatui::{
+    Frame, Terminal,
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     text::Text,
     widgets::{Block, Borders, Paragraph, Wrap},
-    Frame, Terminal,
 };
 fn render_ui(f: &mut Frame, state: &ChatState) {
     let chunks = Layout::default()
@@ -100,10 +100,12 @@ async fn chat_ui(
 
     // Spawn a thread to read terminal input and send it through channel
     let (input_tx, mut input_rx) = tokio::sync::mpsc::channel(1);
-    std::thread::spawn(move || loop {
-        if event::poll(Duration::from_millis(50)).unwrap() {
-            if let Ok(CEvent::Key(key)) = event::read() {
-                let _ = input_tx.blocking_send(key);
+    std::thread::spawn(move || {
+        loop {
+            if event::poll(Duration::from_millis(50)).unwrap() {
+                if let Ok(CEvent::Key(key)) = event::read() {
+                    let _ = input_tx.blocking_send(key);
+                }
             }
         }
     });
@@ -114,7 +116,7 @@ async fn chat_ui(
         tokio::select! {
                     Some(key) = input_rx.recv() => {
                         match key.code {
-                            KeyCode::Char('q') | KeyCode::Esc => break,
+                            KeyCode::Esc => break,
                             KeyCode::Enter => {
                                 let msg = state.input.trim().to_string();
                                 if !msg.is_empty() {
@@ -237,10 +239,10 @@ async fn main() -> Result<()> {
     print!("{}", bind_port);
     input.clear();
 
-    println!("Choose an option:");
+    println!("\n");
+    println!("\x1B[36mChoose an option:\x1B[0m"); // "Choose an option:" in cyan
     println!("1) Open a new chat room");
     println!("2) Join an existing chat room");
-    print!("Enter choice (1 or 2): ");
 
     io::stdout().flush()?;
     io::stdin().read_line(&mut input)?;
@@ -250,7 +252,7 @@ async fn main() -> Result<()> {
 
     let (topic, nodes) = if choice == "1" {
         let topic = TopicId::from_bytes(rand::random());
-        println!("> opening chat room for topic {topic}");
+        println!("\x1B[34m> opening chat room for topic \x1B[0m {}\n", topic);
         (topic, vec![])
     } else if choice == "2" {
         print!("Enter ticket to join: ");
@@ -260,14 +262,14 @@ async fn main() -> Result<()> {
         let ticket_str = ticket_input.trim();
 
         let Ticket { topic, nodes } = Ticket::from_str(ticket_str)?;
-        println!("> joining chat room for topic {topic}");
+        println!("\x1B[34m\n> joining chat room for topic \x1B[0m {}\n", topic);
         (topic, nodes)
     } else {
-        println!("Invalid choice");
+        println!("\x1B[31mInvalid choice\x1B[0m");
         return Ok(());
     };
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
-    println!("> our node id: {}", endpoint.node_id());
+    println!("\x1B[34m> our node id: \x1B[0m {}\n", endpoint.node_id());
 
     let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
 
@@ -280,20 +282,23 @@ async fn main() -> Result<()> {
         let nodes = vec![me];
         Ticket { topic, nodes }
     };
-    println!("> ticket to join us: {ticket}");
+    println!("\x1B[34m> ticket to join us: \x1B[0m{}\n", ticket);
 
     let node_ids = nodes.iter().map(|p| p.node_id).collect();
     if nodes.is_empty() {
-        println!("> waiting for nodes to join us...");
+        println!("\x1B[35m> waiting for nodes to join us...\x1B[0m\n");
     } else {
-        println!("> trying to connect to {} nodes...", nodes.len());
+        println!(
+            "\x1B[35m> trying to connect to {} nodes...\x1B[0m\n",
+            nodes.len()
+        );
         for node in nodes.into_iter() {
             endpoint.add_node_addr(node)?;
         }
     };
 
     let (sender, receiver) = gossip.subscribe_and_join(topic, node_ids).await?.split();
-    println!("> connected!");
+    println!("\x1B[35m> connected!\x1B[0m");
 
     chat_ui(receiver, sender, endpoint.node_id(), name).await?;
     router.shutdown().await?;
