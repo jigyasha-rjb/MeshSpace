@@ -1,4 +1,5 @@
-# 🌐 MeshSpace  
+# 🌐 MeshSpace
+
 > Binding Nodes, Broadcasting Connections
 
 ## 1. What is MeshSpace?
@@ -19,7 +20,6 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 - 🦀 **Rust** — Systems-level performance and safety.
 - 📡 **iroh-gossip** — Gossip-based pub-sub protocol for message exchange.
 - 🧵 **ratatui** — For creating the interactive terminal-based user interface (TUI).
-
 
 ## 4. Project Structure
 
@@ -43,30 +43,32 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 ├── test.md                              # Notes or ideas for future tests
 └── ui.md                                # UI layout drafts or references
 
-````
+```
 
 ## 5. How to Run It?
 
 ### Prerequisites:
+
 - Rust (latest stable recommended)
 
 ### Steps:
+
 ```bash
 cd Rust
 cargo run
-````
+```
 
 ### Optional:
 
-* You can open multiple terminals to simulate multiple peers chatting with each other.
+- You can open multiple terminals to simulate multiple peers chatting with each other.
 
 ## 6. Documentation
 
 See the [`docs/`](./docs) folder for:
 
-* 📡 `networking.md` – Overview of the mesh and message flow
-* 🔍 `peer_discovery.md` – How peers find each other
-* 🎨 `tui.md` – Terminal UI layout and logic
+- 📡 `networking.md` – Overview of the mesh and message flow
+- 🔍 `peer_discovery.md` – How peers find each other
+- 🎨 `tui.md` – Terminal UI layout and logic
 
 ## 7. License
 
@@ -83,5 +85,3 @@ See the [`docs/`](./docs) folder for:
 ---
 
 > Developed by [@pujan-Dev](https://github.com/Pujan-Dev) and [@jigyasha-rjb](https://github.com/jigyasha-rjb)
-
-
