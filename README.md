@@ -77,9 +77,9 @@ See the [`docs/`](./docs) folder for:
 ---
 
 ## 📸 Screenshots
-![Main Page](assets/main-page) 
-![Ticket Diaplay Page](assets/ticket-page)
-![Multiple People Page](assets/multiple-people-chat) 
+![Main Page](assets/main-page.png) 
+![Ticket Diaplay Page](assets/ticket-page.png)
+![Multiple People Page](assets/multiple-people-chat,png) 
 
 ---
 
