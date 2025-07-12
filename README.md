@@ -75,10 +75,9 @@ See the [`docs/`](./docs) folder for:
 ---
 
 ## 📸 Screenshots
-
-| Chat Interface                     | Full Mesh Flow                     | Message Lifecycle                                   |
-| ---------------------------------- | ---------------------------------- | --------------------------------------------------- |
-| ![Chat](assets/chat_interface.png) | ![Mesh](assets/full-mesh-flow.png) | ![Flow](assets/serialization-to-reception-flow.png) |
+![Main Page](assets/main-page) 
+![Ticket Diaplay Page](assets/ticket-page)
+![Multiple People Page](assets/multiple-people-chat) 
 
 ---
 
