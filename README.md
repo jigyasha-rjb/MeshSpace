@@ -24,21 +24,21 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 
 ##4. 📸 Screenshots
 <p align="center">
-  <img src="../assets/main-page.png" alt="Main Page" width="500">
+  <img src="assets/main-page.png" alt="Main Page" width="500">
   <br/>
 </p>
 
 > Figure: TUI Main Interface
 
 <p align="center">
-  <img src="../assets/ticket-page.png" alt="Ticket Page" width="500">
+  <img src="assets/ticket-page.png" alt="Ticket Page" width="500">
   <br/>
 </p>
 
 > Figure: TUI Node and Ticket Display Page
 
 <p align="center">
-  <img src="../assets/ticket-page.png" alt="Ticket Page" width="500">
+  <img src="assets/ticket-page.png" alt="Ticket Page" width="500">
   <br/>
 </p>
 
