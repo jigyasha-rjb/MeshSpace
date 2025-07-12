@@ -22,7 +22,7 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 - 🧵 **ratatui** — For creating the interactive terminal-based user interface (TUI).
 
 
-##4. 📸 Screenshots
+## 4. 📸 Screenshots
 <p align="center">
   <img src="assets/main-page.png" alt="Main Page" width="500">
   <br/>
