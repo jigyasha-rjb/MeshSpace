@@ -51,7 +51,7 @@ fn render_ui(f: &mut Frame, state: &ChatState) {
         .join("\n");
 
     let chat_widget = Paragraph::new(Text::from(chat))
-        .block(Block::default().title("💬 Chat").borders(Borders::ALL))
+        .block(Block::default().title("💬 MeshSpace").borders(Borders::ALL))
         .wrap(Wrap { trim: true });
 
     let input_widget = Paragraph::new(state.input.as_str())
@@ -262,7 +262,10 @@ async fn main() -> Result<()> {
         let ticket_str = ticket_input.trim();
 
         let Ticket { topic, nodes } = Ticket::from_str(ticket_str)?;
-        println!("\x1B[34m\n> joining chat room for topic \x1B[0m {}\n", topic);
+        println!(
+            "\x1B[34m\n> joining chat room for topic \x1B[0m {}\n",
+            topic
+        );
         (topic, nodes)
     } else {
         println!("\x1B[31mInvalid choice\x1B[0m");
