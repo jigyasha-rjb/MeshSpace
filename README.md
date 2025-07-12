@@ -38,7 +38,7 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 > Figure: TUI Node and Ticket Display Page
 
 <p align="center">
-  <img src="assets/ticket-page.png" alt="Ticket Page" width="500">
+  <img src="assets/multiple-people-chat.png" alt="Ticket Page" width="500">
   <br/>
 </p>
 
@@ -83,6 +83,8 @@ cd Rust
 cargo run
 ```
 
+---
+
 ### Optional:
 
 - You can open multiple terminals to simulate multiple peers chatting with each other.
@@ -100,8 +102,6 @@ See the [`docs/`](./docs) folder for:
 ## 8. License
 
 📝 Licensed under the [MIT License](./LICENSE).
-
----
 
 ---
 
