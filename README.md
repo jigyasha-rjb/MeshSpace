@@ -45,22 +45,30 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 
 ```
 
-## 5. How to Run It?
+## 5. How to Run It
 
-### Prerequisites:
+### Prerequisites
 
 - Rust (latest stable recommended)
+- Git
 
-### Steps:
+### Run Steps
 
 ```bash
-cd Rust
+git clone https://github.com/jigyasha-rjb/MeshSpace
+cd MeshSpace/Rust
 cargo run
 ```
 
-### Optional:
+- When prompted, optionally enter your name and port.
 
-- You can open multiple terminals to simulate multiple peers chatting with each other.
+- Choose to open a new chat room or join an existing one.
+
+- If opening a new room, share the generated Ticket with peers.
+
+- If joining, enter the Ticket you received.
+
+- Open multiple terminal windows to simulate peers chatting.
 
 ## 6. Documentation
 

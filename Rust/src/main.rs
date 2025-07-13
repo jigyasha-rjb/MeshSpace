@@ -52,7 +52,8 @@ fn render_ui(f: &mut Frame, state: &ChatState) {
 
     let chat_widget = Paragraph::new(Text::from(chat))
         .block(Block::default().title("💬 MeshSpace").borders(Borders::ALL))
-        .wrap(Wrap { trim: true });
+        .wrap(Wrap { trim: true })
+        .scroll((state.scroll_offset, 0));
 
     let input_widget = Paragraph::new(state.input.as_str())
         .block(Block::default().title("✍️ Message").borders(Borders::ALL));
@@ -69,6 +70,7 @@ struct ChatState {
     messages: Vec<(String, String)>,
     input: String,
     users: HashMap<NodeId, String>,
+    scroll_offset: u16,
 }
 use tokio::time::interval;
 
@@ -79,11 +81,12 @@ async fn chat_ui(
     display_name: Option<String>,
 ) -> Result<()> {
     enable_raw_mode()?;
+    print!("\x1B[2J\x1B[1;1H"); // Clear terminal
     let mut terminal = Terminal::new(CrosstermBackend::new(io::stdout()))?;
     terminal.clear()?;
+
     let mut state = ChatState::default();
     let mut rebroadcast = interval(Duration::from_secs(5));
-    // Announce your presence if you have a name
     // Send a "WhoIsThere" message so others reply with their AboutMe
     sender
         .broadcast(
@@ -136,6 +139,25 @@ async fn chat_ui(
                             KeyCode::Char(c) => {
                                 state.input.push(c);
                             }
+                            KeyCode::Up => {
+                            if state.scroll_offset > 0 {
+                                state.scroll_offset -= 1;
+                            }
+                        }
+                        KeyCode::Down => {
+                            state.scroll_offset += 1;
+                        }
+                        KeyCode::PageUp => {
+                            if state.scroll_offset >= 10 {
+                                state.scroll_offset -= 10;
+                            } else {
+                                state.scroll_offset = 0;
+                            }
+                        }
+                        KeyCode::PageDown => {
+                            state.scroll_offset += 10;
+                        }
+
                             _ => {}
                         }
                     }
@@ -161,13 +183,16 @@ async fn chat_ui(
                         }
                         state.users.insert(from, name.clone());
                     }
+
                     MessageBody::Message { from, text } => {
                         let name = state
                             .users
                             .get(&from)
                             .cloned()
                             .unwrap_or_else(|| from.fmt_short());
+
                         state.messages.push((name, text));
+
                     }
                 }
             }
@@ -190,7 +215,6 @@ async fn chat_ui(
     terminal.clear()?;
     Ok(())
 }
-
 #[derive(Parser, Debug)]
 enum Command {
     Open,
@@ -213,6 +237,17 @@ fn cli_header() {
     println!("\nWelcome to \x1B[33mMeshSpace\x1B[0m, your P2P Chat App!\n");
     println!("\x1B[34mBinding Nodes, Broadcasting Connections\x1B[0m\n");
     println!("Made by \x1B[32m@Pujan-DEV\x1B[0m && \x1B[32m@jigyasha-rjb\x1B[0m\n");
+    println!("----------------------------------------------------\n");
+
+    // How to use section
+    println!("\x1B[36mHow to Use:\x1B[0m");
+
+    println!("  - Start a room and share the \x1B[33mTicket\x1B[0m with others");
+    println!("  - Or join a room using an existing \x1B[33mTicket\x1B[0m");
+    println!("  - Press \x1B[33mEnter\x1B[0m to send a message");
+    println!("  - Use \x1B[33m↑ / ↓\x1B[0m arrow keys to scroll messages");
+    println!("  - Press \x1B[33mEsc\x1B[0m to exit the chat\n");
+    println!("  - \x1B[2mPS: Chat does not auto-scroll — use arrows manually\x1B[0m\n");
     println!("----------------------------------------------------\n");
 }
 
