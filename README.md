@@ -13,7 +13,7 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 - 🛜 **Decentralized Communication** — No servers, no intermediaries.
 - ⚡ **Fast & Lightweight** — Rust-powered with efficient terminal UI.
 - 🔐 **Private by Design** — Local-only chat with no central logging.
-- 🧪 **Hackable & Extensible** — A great base to explore P2P, gossip protocols, or TUI development.
+- 🧪 **Extensible** — A great base to explore P2P, gossip protocols, or TUI development.
 
 ## 3. Tech Stack
 
@@ -61,12 +61,10 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 │   └── tui.md                           # Explanation of terminal UI design
 ├── README.md                            # You are here
 ├── Rust
-│   ├── Cargo.lock
-│   ├── Cargo.toml
-│   └── src
-│       └── main.rs                      # Entry point of the app
-├── test.md                              # Notes or ideas for future tests
-└── ui.md                                # UI layout drafts or references
+    ├── Cargo.lock
+    ├── Cargo.toml
+    └── src
+        └── main.rs                      # Entry point of the app
 
 ```
 
