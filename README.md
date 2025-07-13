@@ -21,7 +21,32 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 - 📡 **iroh-gossip** — Gossip-based pub-sub protocol for message exchange.
 - 🧵 **ratatui** — For creating the interactive terminal-based user interface (TUI).
 
-## 4. Project Structure
+
+## 4. 📸 Screenshots
+<p align="center">
+  <img src="assets/main-page.png" alt="Main Page" width="500">
+  <br/>
+</p>
+
+> Figure: TUI Main Interface
+
+<p align="center">
+  <img src="assets/ticket-page.png" alt="Ticket Page" width="500">
+  <br/>
+</p>
+
+> Figure: TUI Node and Ticket Display Page
+
+<p align="center">
+  <img src="assets/multiple-people-chat.png" alt="Ticket Page" width="500">
+  <br/>
+</p>
+
+> Figure: Multiple People Chat Interface
+
+---
+
+## 5. Project Structure
 
 ```
 
@@ -45,8 +70,7 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 
 ```
 
-## 5. How to Run It
-
+## 6. How to Run It?
 ### Prerequisites
 
 - Rust (latest stable recommended)
@@ -70,7 +94,7 @@ cargo run
 
 - Open multiple terminal windows to simulate peers chatting.
 
-## 6. Documentation
+## 7. Documentation
 
 See the [`docs/`](./docs) folder for:
 
@@ -78,17 +102,11 @@ See the [`docs/`](./docs) folder for:
 - 🔍 `peer_discovery.md` – How peers find each other
 - 🎨 `tui.md` – Terminal UI layout and logic
 
-## 7. License
-
-📝 Licensed under the [MIT License](./LICENSE).
-
 ---
 
-## 📸 Screenshots
+## 8. License
 
-| Chat Interface                     | Full Mesh Flow                     | Message Lifecycle                                   |
-| ---------------------------------- | ---------------------------------- | --------------------------------------------------- |
-| ![Chat](assets/chat_interface.png) | ![Mesh](assets/full-mesh-flow.png) | ![Flow](assets/serialization-to-reception-flow.png) |
+📝 Licensed under the [MIT License](./LICENSE).
 
 ---
 
