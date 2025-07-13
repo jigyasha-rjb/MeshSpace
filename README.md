@@ -57,7 +57,7 @@ Built for learning, experimenting, and demonstrating P2P communication using Rus
 │   └── serialization-to-reception-flow\.png # Gossip message lifecycle
 ├── docs
 │   ├── networking.md                    # Networking topology and behavior
-│   ├── peer\_discovery.md                # How peers discover each other
+│   ├── peer\_discovery.md               # How peers discover each other
 │   └── tui.md                           # Explanation of terminal UI design
 ├── README.md                            # You are here
 ├── Rust
